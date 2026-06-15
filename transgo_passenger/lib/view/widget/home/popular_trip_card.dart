@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:transgo_passenger/core/constant/AppColor.dart';
+import 'package:transgo_passenger/core/shared/app_network_image.dart';
 
+// ignore: must_be_immutable
 class PopularTripCard extends StatelessWidget {
-  const PopularTripCard({
+   PopularTripCard({
     super.key,
     required this.from,
     required this.to,
@@ -11,6 +13,7 @@ class PopularTripCard extends StatelessWidget {
     required this.price,
     required this.rating,
     required this.isPrivate,
+     this.imageUrl,
     this.onDetailsTap,
   });
 
@@ -21,6 +24,7 @@ class PopularTripCard extends StatelessWidget {
   final String price;
   final String rating;
   final bool isPrivate;
+   String ? imageUrl;
   final VoidCallback? onDetailsTap;
 
   @override
@@ -42,20 +46,15 @@ class PopularTripCard extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Container(
+              AppNetworkImage(
+                imageUrl: imageUrl,
                 height: 122,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColor.fifthColor,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Icon(
-                  isPrivate
-                      ? Icons.directions_car_filled_outlined
-                      : Icons.directions_bus_filled_outlined,
-                  color: Colors.white.withOpacity(0.25),
-                  size: 48,
-                ),
+                borderRadius: 22,
+                fit: BoxFit.cover,
+                fallbackIcon: isPrivate
+                    ? Icons.directions_car_filled_outlined
+                    : Icons.directions_bus_filled_outlined,
               ),
 
               Positioned(
@@ -67,7 +66,7 @@ class PopularTripCard extends StatelessWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.22),
+                    color: Colors.black.withOpacity(0.35),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: Colors.white.withOpacity(0.08),

@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:transgo_passenger/core/constant/AppColor.dart';
 
 class AppLoadingWidget extends StatelessWidget {
-  const AppLoadingWidget({
-    super.key,
-    this.message = "Loading...",
-  });
+  const AppLoadingWidget({super.key, this.message = "Loading..."});
 
   final String message;
 
@@ -20,7 +17,7 @@ class AppLoadingWidget extends StatelessWidget {
           border: Border.all(color: Colors.white10),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          // mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(
               width: 38,

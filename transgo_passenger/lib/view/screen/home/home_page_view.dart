@@ -8,17 +8,18 @@ import 'package:transgo_passenger/view/widget/home/home_header_widget.dart';
 import 'package:transgo_passenger/view/widget/home/home_search_panel.dart';
 import 'package:transgo_passenger/view/widget/home/home_section_header.dart';
 import 'package:transgo_passenger/view/widget/home/popular_trip_card.dart';
+import 'package:transgo_passenger/view/widget/state/app_state_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (!Get.isRegistered<HomeViewController>()) {
-      Get.put(HomeViewController());
+    if (!Get.isRegistered<HomeViewControllerImp>()) {
+      Get.put(HomeViewControllerImp());
     }
 
-    return GetBuilder<HomeViewController>(
+    return GetBuilder<HomeViewControllerImp>(
       builder: (controller) {
         return Container(
           width: double.infinity,
@@ -41,7 +42,7 @@ class HomeView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   HomeHeaderWidget(
-                    title: "Good Evening, Khader",
+                    title: "Good Evening, Naya",
                     subtitle: "Ready for your next trip?",
                     onNotificationTap: () {},
                   ),
@@ -58,88 +59,98 @@ class HomeView extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.only(bottom: 120),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          HomeSearchPanel(
-                            fromLocation: controller.fromLocation,
-                            toLocation: controller.toLocation.isEmpty
-                                ? "Where to?"
-                                : controller.toLocation,
-                            selectedDate: controller.selectedDate,
-                            selectedTripType: controller.selectedTripType,
-                            onSearch: controller.searchTrips,
-                          ),
-
-                          const SizedBox(height: 26),
-
-                          HomeSectionHeader(
-                            title: "Categories",
-                            subtitle:
-                                "Choose your destination by governorate",
-                            showViewAll: true,
-                            onViewAll: () {},
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          SizedBox(
-                            height: 142,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: controller.categories.length,
-                              itemBuilder: (context, index) {
-                                final category = controller.categories[index];
-
-                                return CategoryCard(
-                                  title: category["name"],
-                                  subtitle: category["trips"],
-                                  icon: category["icon"],
-                                );
-                              },
+                    child: AppStateView(
+                      statusRequest: controller.categoriesStatusRequest,
+                      isEmpty: controller.categories.isEmpty,
+                      loadingMessage: "Loading categories...",
+                      emptyTitle: "No Categories Found",
+                      emptySubtitle:
+                          "There are no governorates to display right now.",
+                      errorTitle: "Failed to load categories",
+                      errorSubtitle: "Please try again.",
+                      serverErrorTitle: "Server Error",
+                      serverErrorSubtitle: "Could not connect to the server.",
+                      onRetry: controller.refreshTripCategories,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(bottom: 120),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            HomeSearchPanel(
+                              fromLocation: controller.fromLocation,
+                              toLocation: controller.toLocation.isEmpty
+                                  ? "Where to?"
+                                  : controller.toLocation,
+                              selectedDate: controller.selectedDate,
+                              selectedTripType: controller.selectedTripType,
+                              onSearch: controller.searchTrips,
                             ),
-                          ),
 
-                          const SizedBox(height: 26),
+                            const SizedBox(height: 26),
 
-                          const HomeSectionHeader(
-                            title: "Popular Trips",
-                            subtitle: "Most booked routes",
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          SizedBox(
-                            height: 292,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: controller.popularTrips.length,
-                              itemBuilder: (context, index) {
-                                final trip = controller.popularTrips[index];
-
-                                return PopularTripCard(
-                                  from: trip["from"],
-                                  to: trip["to"],
-                                  time: trip["time"],
-                                  seats: trip["seats"],
-                                  price: trip["price"],
-                                  rating: trip["rating"],
-                                  isPrivate: trip["isPrivate"] == true,
-                                  onDetailsTap: () {},
-                                );
-                              },
+                            HomeSectionHeader(
+                              title: "Categories",
+                              subtitle:
+                                  "Choose your destination by governorate",
+                              showViewAll: true,
+                              onViewAll: () {},
                             ),
-                          ),
 
-                          // const SizedBox(height: 26),
+                            const SizedBox(height: 16),
 
-                          // WalletBalanceCard(
-                          //   balance: controller.totalBalance,
-                          //   onTopUp: controller.topUpWallet,
-                          // ),
-                        ],
+                            SizedBox(
+                              height: 145,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: controller.categories.length,
+                                itemBuilder: (context, index) {
+                                  final category = controller.categories[index];
+
+                                  return CategoryCard(
+                                    title: category.name ?? "",
+                                    subtitle:
+                                        "${category.availableTripsCount} TRIPS",
+                                    imageUrl: category.image ?? "",
+                                    onTap: () {
+                                      controller.openCategoryTrips(category);
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+
+                            const SizedBox(height: 26),
+
+                            const HomeSectionHeader(
+                              title: "Popular Trips",
+                              subtitle: "Most booked routes",
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            SizedBox(
+                              height: 292,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: controller.popularTrips.length,
+                                itemBuilder: (context, index) {
+                                  final trip = controller.popularTrips[index];
+
+                                  return PopularTripCard(
+                                    from: trip["from"],
+                                    to: trip["to"],
+                                    time: trip["time"],
+                                    seats: trip["seats"],
+                                    price: trip["price"],
+                                    rating: trip["rating"],
+                                    isPrivate: trip["isPrivate"] == true,
+                                    onDetailsTap: () {},
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

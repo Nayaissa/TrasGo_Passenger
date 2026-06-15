@@ -9,6 +9,7 @@ import 'package:transgo_passenger/view/screen/auth/reset_password_screen.dart';
 import 'package:transgo_passenger/view/screen/auth/success_reset_password_screen.dart';
 import 'package:transgo_passenger/view/screen/auth/success_sign_up_screen.dart';
 import 'package:transgo_passenger/view/screen/home/home_screen.dart';
+import 'package:transgo_passenger/view/screen/home/category_trips_screen.dart';
 
 List<GetPage<dynamic>>? getPages = [
   // intro.....
@@ -27,6 +28,6 @@ List<GetPage<dynamic>>? getPages = [
   GetPage(name: AppRoute.forgetPassword, page: () => SendOtpScreen()),
   GetPage(name: AppRoute.resetPassword, page: () => ResetPasswordScreen()),
   //home
-    GetPage(name: AppRoute.homepage, page: () => HomeScreen()),
-
+  GetPage(name: AppRoute.homepage, page: () => HomeScreen()),
+  GetPage(name: AppRoute.categoryTrips, page: () => TripsView()),
 ];

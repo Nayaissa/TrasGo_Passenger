@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:transgo_passenger/core/constant/routes.dart';
 import 'package:transgo_passenger/core/services/service.dart';
 class MyMiddleWare extends GetMiddleware{
     @override
@@ -8,7 +9,7 @@ class MyMiddleWare extends GetMiddleware{
 @override
   RouteSettings? redirect(String? route){
      if(myServices.sharedPreferences.getString('step') =='2'){
-      //   return const RouteSettings(  name:AppRoute.homepage );
+        return const RouteSettings(  name:AppRoute.homepage );
     }
     if(myServices.sharedPreferences.getString('step') =='1'){
        //  return const RouteSettings(  name:AppRoute.login );
