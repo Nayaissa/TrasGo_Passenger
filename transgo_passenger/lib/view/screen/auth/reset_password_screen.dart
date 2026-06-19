@@ -14,10 +14,10 @@ class ResetPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Get.put(ResetPasswordControllerImp());
-
     return Scaffold(
       body: GetBuilder<ResetPasswordControllerImp>(
+        init: ResetPasswordControllerImp(),
+        global: false,
         builder: (controller) {
           return Container(
             width: double.infinity,

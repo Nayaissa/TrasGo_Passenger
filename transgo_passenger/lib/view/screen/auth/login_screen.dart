@@ -17,10 +17,10 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Get.put(LoginControllerImp());
-
     return Scaffold(
       body: GetBuilder<LoginControllerImp>(
+        init: LoginControllerImp(),
+        global: false,
         builder: (controller) {
           return Container(
             width: double.infinity,

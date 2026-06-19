@@ -129,13 +129,13 @@ class RegisterControllerImp extends RegisterController {
   }
 
   @override
-  void dispose() {
+  void onClose() {
     name.dispose();
     email.dispose();
     phone.dispose();
     password.dispose();
     confirmPassword.dispose();
-    super.dispose();
+    super.onClose();
   }
 }
 // Get.toNamed(

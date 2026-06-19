@@ -11,7 +11,12 @@ class AppRoute {
   static const String successSignUp = '/successSignUp';
   //home
   static const String homepage = '/homepage';
-    static const String categoryTrips = '/categoryTrips';
+  static const String categoryTrips = '/categoryTrips';
+  static const String passengerTrips = '/passengerTrips';
+    static const String tripDetails = '/tripDetails';
+
+
+
 
 
   

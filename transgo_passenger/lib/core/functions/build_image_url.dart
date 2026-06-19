@@ -8,7 +8,7 @@ String buildImageUrl(String? imagePath) {
   if (image.startsWith("http://") || image.startsWith("https://")) {
     return image;
   }
-  const String baseUrl = "http://192.168.113.205:8000";
+  const String baseUrl = "https://alkhader.softup.agency";
 
   final fixedImage = image.startsWith("/") ? image.substring(1) : image;
 

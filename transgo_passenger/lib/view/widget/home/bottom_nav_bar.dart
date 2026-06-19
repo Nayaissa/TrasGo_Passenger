@@ -38,7 +38,7 @@ class MainBottomNavBar extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.calendar_today_outlined,
                 label: "Bookings",
-                index: 2,
+                index: 1,
                 activeColor: activeColor,
                 inactiveColor: inactiveColor,
               ),
@@ -48,7 +48,7 @@ class MainBottomNavBar extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.account_balance_wallet_outlined,
                 label: "Wallet",
-                index: 3,
+                index: 2,
                 activeColor: activeColor,
                 inactiveColor: inactiveColor,
               ),
@@ -56,7 +56,7 @@ class MainBottomNavBar extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.person_outline,
                 label: "Profile",
-                index: 4,
+                index: 3,
                 activeColor: activeColor,
                 inactiveColor: inactiveColor,
               ),

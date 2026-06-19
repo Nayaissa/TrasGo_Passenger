@@ -279,10 +279,9 @@ class VerificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Get.put(VerificationControllerImp());
-
     return Scaffold(
       body: GetBuilder<VerificationControllerImp>(
+        init: VerificationControllerImp(),
         builder: (controller) {
           return Container(
             width: double.infinity,

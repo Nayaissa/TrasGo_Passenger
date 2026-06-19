@@ -11,7 +11,7 @@ class DioHelper {
   static void init() {
     dioClient = dio.Dio(
       dio.BaseOptions(
-        baseUrl: 'http://192.168.113.205:8000/api/',
+        baseUrl: 'https://alkhader.softup.agency/api/',
         connectTimeout: Duration(seconds: 50),
         validateStatus: (status) => true,
         receiveDataWhenStatusError: false,

@@ -16,10 +16,10 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Get.put(RegisterControllerImp());
-
     return Scaffold(
       body: GetBuilder<RegisterControllerImp>(
+        init: RegisterControllerImp(),
+        global: false,
         builder: (controller) {
           return Container(
             width: double.infinity,

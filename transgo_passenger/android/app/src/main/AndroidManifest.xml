@@ -3,6 +3,9 @@
         android:label="transgo_passenger"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyACSWABcipQQCG6r95SkwrUjctdU5dFo0A"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

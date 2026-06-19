@@ -10,6 +10,8 @@ import 'package:transgo_passenger/view/screen/auth/success_reset_password_screen
 import 'package:transgo_passenger/view/screen/auth/success_sign_up_screen.dart';
 import 'package:transgo_passenger/view/screen/home/home_screen.dart';
 import 'package:transgo_passenger/view/screen/home/category_trips_screen.dart';
+import 'package:transgo_passenger/view/screen/trips/passenger_trips_screen.dart';
+import 'package:transgo_passenger/view/screen/trips/trip_details_screen.dart';
 
 List<GetPage<dynamic>>? getPages = [
   // intro.....
@@ -30,4 +32,7 @@ List<GetPage<dynamic>>? getPages = [
   //home
   GetPage(name: AppRoute.homepage, page: () => HomeScreen()),
   GetPage(name: AppRoute.categoryTrips, page: () => TripsView()),
+  // trips and booking
+  GetPage(name: AppRoute.passengerTrips, page: () => MyTripsView()),
+  GetPage(name: AppRoute.tripDetails, page: () => TripDetailsScreen()),
 ];

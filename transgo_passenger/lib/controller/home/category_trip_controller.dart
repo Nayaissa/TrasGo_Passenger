@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:transgo_passenger/core/class/diohelper.dart';
 import 'package:transgo_passenger/core/class/statusrequest.dart';
+import 'package:transgo_passenger/core/constant/routes.dart';
 import 'package:transgo_passenger/data/model/category_model.dart';
 import 'package:transgo_passenger/data/model/trip_category_trips_model.dart';
-
 
 class TripsController extends GetxController {
   StatusRequest? tripsStatusRequest;
@@ -26,10 +26,7 @@ class TripsController extends GetxController {
   List<String> startPoints = [];
   List<String> departureDateOptions = [];
 
-  final List<String> tripTypes = [
-    "shared",
-    "private",
-  ];
+  final List<String> tripTypes = ["shared", "private"];
 
   Map<String, int> startPointNameToId = {};
 
@@ -59,16 +56,9 @@ class TripsController extends GetxController {
   }
 
   void _initDates() {
-    departureDateOptions = List.generate(
-      14,
-      (index) {
-        return _formatDate(
-          DateTime.now().add(
-            Duration(days: index),
-          ),
-        );
-      },
-    );
+    departureDateOptions = List.generate(14, (index) {
+      return _formatDate(DateTime.now().add(Duration(days: index)));
+    });
   }
 
   String _formatDate(DateTime date) {
@@ -107,8 +97,6 @@ class TripsController extends GetxController {
       final value = await DioHelper.getDataa(
         url: "v1/passenger/trip-categories",
       );
-
-     
 
       if (value != null && value.statusCode == 200) {
         final responseBody = value.data;
@@ -220,12 +208,14 @@ class TripsController extends GetxController {
         }
       } else if (value != null && value.statusCode == 401) {
         tripsStatusRequest = StatusRequest.serverfailure;
-
+        await myServices.removeFromSharedPreferences('token');
+        await myServices.setString('step', '1');
         Get.snackbar(
           "Error",
           "انتهت صلاحية تسجيل الدخول، يرجى تسجيل الدخول مرة أخرى",
           snackPosition: SnackPosition.BOTTOM,
         );
+        Get.offAllNamed(AppRoute.login);
       } else {
         tripsStatusRequest = StatusRequest.serverfailure;
 
@@ -305,12 +295,21 @@ class TripsController extends GetxController {
     print("BOOKING ENDPOINT => ${trip.bookingEndpoint}");
   }
 
-  void viewDetails(int index) {
-    final trip = availableTrips[index];
+ void viewDetails(int index) {
+  final trip = availableTrips[index];
 
-    print("VIEW TRIP ID => ${trip.tripId}");
-    print("DETAILS ENDPOINT => ${trip.detailsEndpoint}");
-  }
+  print("========== OPEN TRIP DETAILS ==========");
+  print("INDEX => $index");
+  print("TRIP ID FROM CARD => ${trip.tripId}");
+  print("DETAILS ENDPOINT FROM CARD => ${trip.detailsEndpoint}");
+
+  Get.toNamed(
+    AppRoute.tripDetails,
+    arguments: {
+      "trip_id": trip.tripId,
+      "details_endpoint": trip.detailsEndpoint,
+    },
+  );
 }
 
 int? _toInt(dynamic value) {
@@ -318,3 +317,5 @@ int? _toInt(dynamic value) {
   if (value is int) return value;
   return int.tryParse(value.toString());
 }
+}
+

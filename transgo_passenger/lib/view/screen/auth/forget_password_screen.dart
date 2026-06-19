@@ -15,10 +15,10 @@ class SendOtpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Get.put(SendOtpControllerImp());
-
     return Scaffold(
       body: GetBuilder<SendOtpControllerImp>(
+        init: SendOtpControllerImp(),
+        global: false,
         builder: (controller) {
           return Container(
             width: double.infinity,
