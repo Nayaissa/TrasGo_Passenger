@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:transgo_passenger/view/screen/bookings/book_trip_screen.dart';
 import 'package:transgo_passenger/view/screen/home/home_page_view.dart';
 import 'package:transgo_passenger/view/screen/trips/passenger_trips_screen.dart';
 
@@ -9,12 +10,7 @@ class HomeController extends GetxController {
   final List<Widget> pages = const [
     HomeView(),
     MyTripsView(),
-    Center(
-      child: Text(
-        'Wallet Screen Content',
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
+   BookTripScreen(),
     Center(
       child: Text(
         'Profile Screen Content',

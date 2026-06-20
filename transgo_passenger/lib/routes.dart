@@ -8,6 +8,7 @@ import 'package:transgo_passenger/view/screen/auth/register_screen.dart';
 import 'package:transgo_passenger/view/screen/auth/reset_password_screen.dart';
 import 'package:transgo_passenger/view/screen/auth/success_reset_password_screen.dart';
 import 'package:transgo_passenger/view/screen/auth/success_sign_up_screen.dart';
+import 'package:transgo_passenger/view/screen/bookings/book_trip_screen.dart';
 import 'package:transgo_passenger/view/screen/home/home_screen.dart';
 import 'package:transgo_passenger/view/screen/home/category_trips_screen.dart';
 import 'package:transgo_passenger/view/screen/trips/passenger_trips_screen.dart';
@@ -35,4 +36,8 @@ List<GetPage<dynamic>>? getPages = [
   // trips and booking
   GetPage(name: AppRoute.passengerTrips, page: () => MyTripsView()),
   GetPage(name: AppRoute.tripDetails, page: () => TripDetailsScreen()),
+
+  //
+    GetPage(name: AppRoute.bookTrip, page: () => BookTripScreen()),
+
 ];

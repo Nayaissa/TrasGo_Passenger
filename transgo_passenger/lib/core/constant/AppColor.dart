@@ -9,6 +9,8 @@ class AppColor {
   static const Color thirdColor = Color(0xFF4A7DFF);
   static const Color fourthColor = Color(0xFFC387FF);
   static const Color fifthColor =  Color(0xFF182447);
+    static const Color hintColor = Color(0xFF8E9AC2);
+
 
 
   // light mode

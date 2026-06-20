@@ -13,7 +13,11 @@ class AppRoute {
   static const String homepage = '/homepage';
   static const String categoryTrips = '/categoryTrips';
   static const String passengerTrips = '/passengerTrips';
-    static const String tripDetails = '/tripDetails';
+  static const String tripDetails = '/tripDetails';
+
+  // bookings
+    static const String bookTrip = '/bookTrip';
+
 
 
 
