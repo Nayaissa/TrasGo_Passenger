@@ -28,10 +28,7 @@ class HomeView extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                AppColor.primaryColor,
-                AppColor.secondaryColor,
-              ],
+              colors: [AppColor.primaryColor, AppColor.secondaryColor],
             ),
           ),
           child: SafeArea(
@@ -76,18 +73,17 @@ class HomeView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            HomeSearchPanel(
-                              fromLocation: controller.fromLocation,
-                              toLocation: controller.toLocation.isEmpty
-                                  ? "Where to?"
-                                  : controller.toLocation,
-                              selectedDate: controller.selectedDate,
-                              selectedTripType: controller.selectedTripType,
-                              onSearch: controller.searchTrips,
-                            ),
+                            // HomeSearchPanel(
+                            //   fromLocation: controller.fromLocation,
+                            //   toLocation: controller.toLocation.isEmpty
+                            //       ? "Where to?"
+                            //       : controller.toLocation,
+                            //   selectedDate: controller.selectedDate,
+                            //   selectedTripType: controller.selectedTripType,
+                            //   onSearch: controller.searchTrips,
+                            // ),
 
-                            const SizedBox(height: 26),
-
+                            // const SizedBox(height: 26),
                             HomeSectionHeader(
                               title: "Categories",
                               subtitle:

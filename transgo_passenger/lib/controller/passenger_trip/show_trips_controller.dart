@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:transgo_passenger/core/class/diohelper.dart';
 import 'package:transgo_passenger/core/class/statusrequest.dart';
 import 'package:transgo_passenger/core/constant/routes.dart';
+import 'package:transgo_passenger/data/model/cancel_booking_model.dart';
 import 'package:transgo_passenger/data/model/passenger_trips_model.dart';
 import 'package:transgo_passenger/data/model/trip_statuses_model.dart';
 
@@ -15,6 +16,8 @@ class MyTripsController extends GetxController {
   List<PassengerTripItemModel> visibleTrips = [];
 
   PassengerTripsModel? passengerTripsModel;
+  bool isCancellingBooking = false;
+  int? cancellingBookingId;
 
   @override
   void onInit() {
@@ -189,8 +192,88 @@ class MyTripsController extends GetxController {
     print("TRACKING ENDPOINT => ${trip.trackingEndpoint}");
   }
 
-  void onCancelPressed(PassengerTripItemModel trip) {
-    print("CANCEL BOOKING ID => ${trip.booking?.bookingId}");
+  Future<CancelBookingModel?> onCancelPressed(
+    PassengerTripItemModel trip,
+  ) async {
+    final bookingId = trip.booking?.bookingId;
+
+    print("CANCEL BOOKING ID => $bookingId");
+
+    if (bookingId == null) {
+      Get.snackbar(
+        "Error",
+        "Booking id is missing",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return null;
+    }
+
+    if (isCancellingBooking) return null;
+
+    isCancellingBooking = true;
+    cancellingBookingId = bookingId;
+    update();
+
+    try {
+      final value = await DioHelper.postsData(
+        url: "v1/passenger/bookings/$bookingId/cancel",
+        data: {},
+      );
+
+      print("CANCEL BOOKING STATUS CODE => ${value?.statusCode}");
+      print("CANCEL BOOKING RESPONSE => ${value?.data}");
+
+      if (value != null && value.statusCode == 200) {
+        final responseBody = value.data;
+
+        if (responseBody is Map && responseBody["success"] == true) {
+          final cancelModel = CancelBookingModel.fromJson(
+            Map<String, dynamic>.from(responseBody),
+          );
+
+          await getMyTrips();
+          return cancelModel;
+        } else {
+          Get.snackbar(
+            "Warning",
+            _extractMessage(responseBody),
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
+      } else if (value != null && value.statusCode == 401) {
+        await myServices.removeFromSharedPreferences('token');
+        await myServices.setString('step', '1');
+
+        Get.snackbar(
+          "Error",
+          "انتهت صلاحية تسجيل الدخول، يرجى تسجيل الدخول مرة أخرى",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        Get.offAllNamed(AppRoute.login);
+      } else {
+        Get.snackbar(
+          "Error",
+          _extractMessage(value?.data),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (error, stackTrace) {
+      print("CANCEL BOOKING ERROR => $error");
+      print("CANCEL BOOKING STACKTRACE => $stackTrace");
+
+      Get.snackbar(
+        "Error",
+        "Server error, please try again",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isCancellingBooking = false;
+      cancellingBookingId = null;
+      update();
+    }
+
+    return null;
   }
 
   void onRatePressed(PassengerTripItemModel trip) {
@@ -209,5 +292,27 @@ class MyTripsController extends GetxController {
         "details_endpoint": trip.detailsEndpoint,
       },
     );
+  }
+
+  String _extractMessage(dynamic responseBody) {
+    if (responseBody is Map) {
+      final errors = responseBody["errors"];
+
+      if (errors is Map) {
+        for (final value in errors.values) {
+          if (value is List && value.isNotEmpty) {
+            return value.first.toString();
+          }
+
+          if (value != null) {
+            return value.toString();
+          }
+        }
+      }
+
+      return responseBody["message"]?.toString() ?? "Failed to cancel booking";
+    }
+
+    return "Failed to cancel booking";
   }
 }

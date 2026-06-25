@@ -69,6 +69,10 @@ class MyTripCard extends StatelessWidget {
                         fromDetails: fromDetails,
                         to: to,
                         toDetails: toDetails,
+                        pickupTitle: trip.pickupTitle,
+                        pickupDetails: trip.pickupDetails,
+                        hasPickupPoint: trip.hasPickupPoint,
+                        isNewPickupPoint: trip.isNewPickupPoint,
                         isCancelled: isCancelled,
                       ),
                     ),
@@ -219,6 +223,10 @@ class _RouteSection extends StatelessWidget {
     required this.fromDetails,
     required this.to,
     required this.toDetails,
+    required this.pickupTitle,
+    required this.pickupDetails,
+    required this.hasPickupPoint,
+    required this.isNewPickupPoint,
     required this.isCancelled,
   });
 
@@ -226,6 +234,10 @@ class _RouteSection extends StatelessWidget {
   final String fromDetails;
   final String to;
   final String toDetails;
+  final String pickupTitle;
+  final String pickupDetails;
+  final bool hasPickupPoint;
+  final bool isNewPickupPoint;
   final bool isCancelled;
 
   @override
@@ -242,12 +254,18 @@ class _RouteSection extends StatelessWidget {
           icon: Icons.radio_button_unchecked,
           color: routeColor,
         ),
-        Container(
-          margin: const EdgeInsets.only(right: 6, top: 4, bottom: 4),
-          width: 1.5,
-          height: 24,
-          color: routeColor.withOpacity(0.35),
-        ),
+        if (hasPickupPoint) ...[
+          _RouteLine(color: routeColor),
+          _RoutePoint(
+            title: pickupTitle.isEmpty ? "Pickup point" : pickupTitle,
+            subtitle: pickupDetails,
+            icon: isNewPickupPoint
+                ? Icons.add_location_alt_outlined
+                : Icons.location_on_outlined,
+            color: isNewPickupPoint ? AppColor.fourthColor : routeColor,
+          ),
+        ],
+        _RouteLine(color: routeColor),
         _RoutePoint(
           title: to,
           subtitle: toDetails,
@@ -255,6 +273,24 @@ class _RouteSection extends StatelessWidget {
           color: routeColor,
         ),
       ],
+    );
+  }
+}
+
+class _RouteLine extends StatelessWidget {
+  const _RouteLine({
+    required this.color,
+  });
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 6, top: 4, bottom: 4),
+      width: 1.5,
+      height: 24,
+      color: color.withOpacity(0.35),
     );
   }
 }

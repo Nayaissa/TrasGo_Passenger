@@ -23,10 +23,7 @@ class TripsView extends StatelessWidget {
             backgroundColor: AppColor.primaryColor,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => Get.back(),
             ),
             title: Text(
@@ -58,10 +55,7 @@ class TripsView extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  AppColor.primaryColor,
-                  AppColor.secondaryColor,
-                ],
+                colors: [AppColor.primaryColor, AppColor.secondaryColor],
               ),
             ),
             child: SafeArea(
@@ -78,12 +72,9 @@ class TripsView extends StatelessWidget {
                       date: controller.bannerDate,
                       imageUrl: controller.bannerImage,
                     ),
-
                     const SizedBox(height: 20),
 
-                    TripsInlineFilterCard(
-                      controller: controller,
-                    ),
+                    // TripsInlineFilterCard(controller: controller),
 
                     const SizedBox(height: 20),
 
@@ -142,6 +133,14 @@ class TripsView extends StatelessWidget {
                             fromDetails: trip.fromDetails,
                             to: trip.toName,
                             toDetails: trip.toDetails,
+                            stopPoints:
+                                trip.visibleStopPoints.map((point) {
+                                  return AvailableTripStopPoint(
+                                    title: point.title,
+                                    subtitle: point.subtitle,
+                                    isNew: point.isNew,
+                                  );
+                                }).toList(),
                             seats: trip.seatsText,
                             type: trip.typeText,
                             status: trip.statusText,

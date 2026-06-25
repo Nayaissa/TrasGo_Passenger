@@ -11,6 +11,7 @@ class AvailableTripCard extends StatelessWidget {
     required this.fromDetails,
     required this.to,
     required this.toDetails,
+    this.stopPoints = const [],
     required this.seats,
     required this.type,
     required this.status,
@@ -28,6 +29,7 @@ class AvailableTripCard extends StatelessWidget {
   final String fromDetails;
   final String to;
   final String toDetails;
+  final List<AvailableTripStopPoint> stopPoints;
   final String seats;
   final String type;
   final String status;
@@ -70,6 +72,7 @@ class AvailableTripCard extends StatelessWidget {
                   fromDetails: fromDetails,
                   to: to,
                   toDetails: toDetails,
+                  stopPoints: stopPoints,
                 ),
               ),
             ],
@@ -232,17 +235,17 @@ class _RouteSection extends StatelessWidget {
     required this.fromDetails,
     required this.to,
     required this.toDetails,
+    required this.stopPoints,
   });
 
   final String from;
   final String fromDetails;
   final String to;
   final String toDetails;
+  final List<AvailableTripStopPoint> stopPoints;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -253,12 +256,21 @@ class _RouteSection extends StatelessWidget {
           iconColor: AppColor.thirdColor,
         ),
 
-        Container(
-          margin: const EdgeInsets.only(right: 6, top: 4, bottom: 4),
-          height: 24,
-          width: 1.5,
-          color: AppColor.thirdColor.withOpacity(0.35),
-        ),
+        ...stopPoints.expand((point) {
+          return [
+            const _RouteLine(),
+            _RoutePoint(
+              title: point.title,
+              subtitle: point.subtitle,
+              icon: point.isNew
+                  ? Icons.add_location_alt_outlined
+                  : Icons.location_on_outlined,
+              iconColor: point.isNew ? AppColor.fourthColor : AppColor.thirdColor,
+            ),
+          ];
+        }),
+
+        const _RouteLine(),
 
         _RoutePoint(
           title: to,
@@ -267,6 +279,32 @@ class _RouteSection extends StatelessWidget {
           iconColor: AppColor.thirdColor,
         ),
       ],
+    );
+  }
+}
+
+class AvailableTripStopPoint {
+  const AvailableTripStopPoint({
+    required this.title,
+    required this.subtitle,
+    this.isNew = false,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool isNew;
+}
+
+class _RouteLine extends StatelessWidget {
+  const _RouteLine();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 6, top: 4, bottom: 4),
+      height: 22,
+      width: 1.5,
+      color: AppColor.thirdColor.withOpacity(0.35),
     );
   }
 }

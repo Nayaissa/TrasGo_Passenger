@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:transgo_passenger/core/class/diohelper.dart';
 import 'package:transgo_passenger/core/class/statusrequest.dart';
+import 'package:transgo_passenger/core/constant/routes.dart';
+import 'package:transgo_passenger/data/model/booking_model.dart';
 import 'package:transgo_passenger/data/model/trip_details_model.dart';
 
 class TripDetailsController extends GetxController {
@@ -296,6 +298,7 @@ void onInit() {
     if (points.isEmpty) {
       return [
         RoutePointUiModel(
+          pointId: null,
           title: data.route?.from?.name ?? "",
           subtitle: data.route?.from?.displayAddress ??
               data.route?.from?.address ??
@@ -305,6 +308,7 @@ void onInit() {
           longitude: data.route?.from?.longitude,
         ),
         RoutePointUiModel(
+          pointId: null,
           title: data.route?.to?.name ?? "",
           subtitle:
               data.route?.to?.displayAddress ?? data.route?.to?.address ?? "",
@@ -329,6 +333,7 @@ void onInit() {
       }
 
       return RoutePointUiModel(
+        pointId: point.pointId,
         title: title,
         subtitle: point.displayAddress ?? point.note ?? point.address ?? "",
         type: type,
@@ -413,8 +418,71 @@ void onInit() {
     );
   }
 
-  void bookTrip() {
+  Future<void> bookTrip() async {
     print("BOOKING ENDPOINT => $bookingEndpoint");
+    if (tripDetails == null) return;
+
+    final result = await Get.toNamed(
+      AppRoute.bookTrip,
+      arguments: {
+        "trip_id": tripId,
+        "booking_endpoint": bookingEndpoint,
+        "trip_details": tripDetails,
+      },
+    );
+
+    if (result is BookingModel && result.success == true) {
+      Get.snackbar(
+        "Booking",
+        result.message ?? "Your trip has been booked successfully",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      await getTripDetails();
+      _addBookedPickupPoint(result.data?.pickupPoint);
+    }
+  }
+
+  void _addBookedPickupPoint(BookingPickupPoint? pickupPoint) {
+    if (pickupPoint == null ||
+        pickupPoint.latitude == null ||
+        pickupPoint.longitude == null) {
+      return;
+    }
+
+    final alreadyVisible = routePoints.any((point) {
+      if (pickupPoint.pickupPointId != null &&
+          point.pointId == pickupPoint.pickupPointId) {
+        return true;
+      }
+
+      return point.latitude == pickupPoint.latitude &&
+          point.longitude == pickupPoint.longitude;
+    });
+
+    if (alreadyVisible) return;
+
+    final bookedPoint = RoutePointUiModel(
+      pointId: pickupPoint.pickupPointId,
+      title: pickupPoint.pointName?.isNotEmpty == true
+          ? pickupPoint.pointName!
+          : "Pickup point",
+      subtitle: pickupPoint.address?.isNotEmpty == true
+          ? pickupPoint.address!
+          : "${pickupPoint.latitude!.toStringAsFixed(6)}, ${pickupPoint.longitude!.toStringAsFixed(6)}",
+      type: "pickup",
+      latitude: pickupPoint.latitude,
+      longitude: pickupPoint.longitude,
+    );
+
+    final endIndex = routePoints.indexWhere((point) => point.type == "end");
+    if (endIndex == -1) {
+      routePoints.add(bookedPoint);
+    } else {
+      routePoints.insert(endIndex, bookedPoint);
+    }
+
+    update();
   }
 
   void viewDriverProfile() {
@@ -559,6 +627,7 @@ class PassengerUiModel {
 }
 
 class RoutePointUiModel {
+  final int? pointId;
   final String title;
   final String subtitle;
   final String type;
@@ -566,6 +635,7 @@ class RoutePointUiModel {
   final double? longitude;
 
   RoutePointUiModel({
+    this.pointId,
     required this.title,
     required this.subtitle,
     required this.type,

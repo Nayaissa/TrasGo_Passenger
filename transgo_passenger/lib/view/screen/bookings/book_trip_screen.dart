@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:transgo_passenger/controller/booking/book_trip_controller.dart';
 import 'package:transgo_passenger/core/constant/AppColor.dart';
+import 'package:transgo_passenger/view/widget/shared/trip_google_map.dart';
 import 'package:transgo_passenger/view/widget/state/app_loading_overlay.dart';
 import 'package:transgo_passenger/view/widget/state/app_state_view.dart';
 
@@ -61,7 +62,9 @@ class BookTripScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _tripSummaryCard(context, controller),
+                        _tripMapCard(controller),
+                        const SizedBox(height: 16),
+                        _tripSummaryCard(controller),
                         const SizedBox(height: 16),
                         _bookingOptionsCard(controller),
                         const SizedBox(height: 24),
@@ -78,37 +81,95 @@ class BookTripScreen extends StatelessWidget {
     );
   }
 
-  Widget _tripSummaryCard(
-    BuildContext context,
-    BookTripControllerImp controller,
-  ) {
+  Widget _tripMapCard(BookTripControllerImp controller) {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle("PICKUP ON ROUTE"),
+          const SizedBox(height: 10),
+          TripGoogleMap(
+            initialPosition: controller.mapInitialPosition,
+            markers: controller.mapMarkers,
+            polylinePoints: controller.polylinePoints,
+            bounds: controller.mapBounds,
+            height: 230,
+            onTap: controller.selectNewPoint,
+          ),
+          const SizedBox(height: 12),
+          _selectedPickupBanner(controller),
+        ],
+      ),
+    );
+  }
+
+  Widget _selectedPickupBanner(BookTripControllerImp controller) {
+    return _innerBox(
+      borderColor: controller.selectedPickupPoint?.isNew == true
+          ? AppColor.fourthColor.withOpacity(0.65)
+          : AppColor.thirdColor.withOpacity(0.35),
+      child: Row(
+        children: [
+          Icon(
+            controller.selectedPickupPoint?.isNew == true
+                ? Icons.add_location_alt_outlined
+                : Icons.location_on_outlined,
+            color: controller.selectedPickupPoint?.isNew == true
+                ? AppColor.fourthColor
+                : AppColor.thirdColor,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  controller.pickupPointTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  controller.selectedPickupPoint?.subtitle ??
+                      "Tap a route point or tap the map",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColor.hintColor,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tripSummaryCard(BookTripControllerImp controller) {
     return _card(
       child: Column(
         children: [
           Row(
             children: [
-              _routeDots(),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      controller.from,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: _titleStyle(),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      controller.to,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: _titleStyle(),
-                    ),
-                  ],
-                ),
+              _routeLabel(
+                icon: Icons.trip_origin,
+                title: "FROM",
+                value: controller.from,
               ),
+              const SizedBox(width: 12),
+              _routeLabel(
+                icon: Icons.flag_outlined,
+                title: "TO",
+                value: controller.to,
+              ),
+              const SizedBox(width: 12),
               _chip(controller.isPrivateTrip ? "Private" : "Shared"),
             ],
           ),
@@ -158,6 +219,40 @@ class BookTripScreen extends StatelessWidget {
     );
   }
 
+  Widget _routeLabel({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
+    return Expanded(
+      child: Row(
+        children: [
+          Icon(icon, color: AppColor.thirdColor, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sectionTitle(title),
+                const SizedBox(height: 4),
+                Text(
+                  value.isEmpty ? "-" : value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _bookingOptionsCard(BookTripControllerImp controller) {
     return _card(
       child: Column(
@@ -169,9 +264,11 @@ class BookTripScreen extends StatelessWidget {
           const SizedBox(height: 20),
           _privateTripSwitch(controller),
           const SizedBox(height: 20),
-          _sectionTitle("PICKUP POINT"),
+          _sectionTitle("PICKUP POINTS"),
           const SizedBox(height: 10),
-          _pickupPoint(controller),
+          _pickupPoints(controller),
+          const SizedBox(height: 14),
+          _newPointNote(controller),
           const SizedBox(height: 20),
           _sectionTitle("PAYMENT METHOD"),
           const SizedBox(height: 10),
@@ -227,32 +324,34 @@ class BookTripScreen extends StatelessWidget {
   }
 
   Widget _privateTripSwitch(BookTripControllerImp controller) {
+    final bool enabled = controller.canBookPrivate;
+
     return _innerBox(
       borderColor: controller.isPrivateTrip
           ? AppColor.fourthColor.withOpacity(0.7)
           : Colors.white.withOpacity(0.08),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.lock_outline,
-            color: AppColor.fourthColor,
+            color: enabled ? AppColor.fourthColor : Colors.white30,
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Private Trip",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: enabled ? Colors.white : Colors.white38,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 3),
+                const SizedBox(height: 3),
                 Text(
-                  "Book all remaining seats",
-                  style: TextStyle(
+                  enabled ? "Book all remaining seats" : "Not available",
+                  style: const TextStyle(
                     color: AppColor.hintColor,
                     fontSize: 12,
                   ),
@@ -264,35 +363,123 @@ class BookTripScreen extends StatelessWidget {
             value: controller.isPrivateTrip,
             activeColor: AppColor.fourthColor,
             inactiveThumbColor: AppColor.hintColor,
-            onChanged: controller.togglePrivateTrip,
+            onChanged: enabled ? controller.togglePrivateTrip : null,
           ),
         ],
       ),
     );
   }
 
-  Widget _pickupPoint(BookTripControllerImp controller) {
-    return _innerBox(
-      child: Row(
-        children: [
-          const Icon(
-            Icons.location_on_outlined,
-            color: AppColor.thirdColor,
+  Widget _pickupPoints(BookTripControllerImp controller) {
+    if (controller.pickupPoints.isEmpty) {
+      return _innerBox(
+        child: const Text(
+          "Tap the map to select a new pickup point",
+          style: TextStyle(
+            color: AppColor.hintColor,
+            fontSize: 13,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              controller.stopPoint,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+        ),
+      );
+    }
+
+    return Column(
+      children: controller.pickupPoints.map((point) {
+        final bool selected = controller.selectedPickupPoint == point;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: InkWell(
+            onTap: () => controller.selectExistingPoint(point),
+            borderRadius: BorderRadius.circular(16),
+            child: _innerBox(
+              borderColor: selected
+                  ? AppColor.thirdColor
+                  : Colors.white.withOpacity(0.08),
+              child: Row(
+                children: [
+                  Icon(
+                    selected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                    color:
+                        selected ? AppColor.thirdColor : AppColor.hintColor,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          point.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          point.subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColor.hintColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _newPointNote(BookTripControllerImp controller) {
+    final bool isNew = controller.selectedPickupPoint?.isNew == true;
+
+    return TextField(
+      controller: controller.newPointNoteController,
+      enabled: isNew,
+      onChanged: controller.updateNewPointNote,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: isNew
+            ? "Note for the new pickup point"
+            : "Tap the map first to add a new pickup point",
+        hintStyle: const TextStyle(
+          color: AppColor.hintColor,
+          fontSize: 13,
+        ),
+        prefixIcon: Icon(
+          Icons.edit_location_alt_outlined,
+          color: isNew ? AppColor.fourthColor : Colors.white30,
+        ),
+        filled: true,
+        fillColor: AppColor.fifthColor,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: AppColor.fourthColor.withOpacity(0.45),
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: Colors.white.withOpacity(0.08),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColor.fourthColor),
+        ),
       ),
     );
   }
@@ -311,10 +498,10 @@ class BookTripScreen extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _paymentCard(
-            title: "Wallet",
+            title: "Electronic",
             icon: Icons.account_balance_wallet_outlined,
-            selected: controller.selectedPaymentMethod == "wallet",
-            onTap: () => controller.changePaymentMethod("wallet"),
+            selected: controller.selectedPaymentMethod == "electronic",
+            onTap: () => controller.changePaymentMethod("electronic"),
           ),
         ),
       ],
@@ -364,7 +551,7 @@ class BookTripScreen extends StatelessWidget {
   }
 
   Widget _confirmButton(BookTripControllerImp controller) {
-    final bool enabled = !controller.isConfirming;
+    final bool enabled = controller.canConfirm;
 
     return Container(
       width: double.infinity,
@@ -394,7 +581,7 @@ class BookTripScreen extends StatelessWidget {
         child: Text(
           controller.isConfirming
               ? "Confirming..."
-              : "Confirm Booking • ${controller.totalPrice.toStringAsFixed(2)} S.P",
+              : "Confirm Booking - ${controller.totalPrice.toStringAsFixed(2)} S.P",
           style: TextStyle(
             color: enabled ? Colors.white : Colors.white38,
             fontSize: 16,
@@ -435,28 +622,6 @@ class BookTripScreen extends StatelessWidget {
         ),
       ),
       child: child,
-    );
-  }
-
-  Widget _routeDots() {
-    return Column(
-      children: [
-        const Icon(
-          Icons.radio_button_unchecked,
-          color: AppColor.thirdColor,
-          size: 18,
-        ),
-        Container(
-          height: 32,
-          width: 1.5,
-          color: AppColor.thirdColor.withOpacity(0.35),
-        ),
-        const Icon(
-          Icons.circle,
-          color: AppColor.thirdColor,
-          size: 14,
-        ),
-      ],
     );
   }
 
@@ -517,14 +682,6 @@ class BookTripScreen extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-    );
-  }
-
-  TextStyle _titleStyle() {
-    return const TextStyle(
-      color: Colors.white,
-      fontSize: 22,
-      fontWeight: FontWeight.bold,
     );
   }
 }

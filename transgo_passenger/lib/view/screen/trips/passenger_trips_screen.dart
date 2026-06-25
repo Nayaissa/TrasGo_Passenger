@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:transgo_passenger/controller/passenger_trip/show_trips_controller.dart';
 import 'package:transgo_passenger/core/class/statusrequest.dart';
 import 'package:transgo_passenger/core/constant/AppColor.dart';
+import 'package:transgo_passenger/view/widget/booking/cancel_booking_result_dialog.dart';
 import 'package:transgo_passenger/view/widget/passenger_trip/my_trip_card.dart';
 import 'package:transgo_passenger/view/widget/passenger_trip/my_trips_stats_card.dart';
 import 'package:transgo_passenger/view/widget/passenger_trip/my_trips_tab_bar.dart';
@@ -110,8 +111,17 @@ class MyTripsView extends StatelessWidget {
                                 onTrackingPressed: () {
                                   controller.onTrackingPressed(trip);
                                 },
-                                onCancelPressed: () {
-                                  controller.onCancelPressed(trip);
+                                onCancelPressed: () async {
+                                  final cancelModel =
+                                      await controller.onCancelPressed(trip);
+
+                                  if (cancelModel != null) {
+                                    Get.dialog(
+                                      CancelBookingResultDialog(
+                                        model: cancelModel,
+                                      ),
+                                    );
+                                  }
                                 },
                                 onRatePressed: () {
                                   controller.onRatePressed(trip);

@@ -97,6 +97,7 @@ class CategoryTripItem {
   final TripPricingInfo? pricing;
   final int? availableSeats;
   final TripDistanceInfo? distance;
+  final List<CategoryTripRoutePoint> routePoints;
   final String? detailsEndpoint;
   final String? bookingEndpoint;
 
@@ -113,11 +114,15 @@ class CategoryTripItem {
     this.pricing,
     this.availableSeats,
     this.distance,
+    this.routePoints = const [],
     this.detailsEndpoint,
     this.bookingEndpoint,
   });
 
   factory CategoryTripItem.fromJson(Map<String, dynamic> json) {
+    final routePointsJson =
+        json["route_points"] ?? json["points"] ?? json["stops"];
+
     return CategoryTripItem(
       tripId: _toInt(json["trip_id"]),
       clusterId: _toInt(json["cluster_id"]),
@@ -151,6 +156,15 @@ class CategoryTripItem {
               Map<String, dynamic>.from(json["distance"]),
             )
           : null,
+      routePoints: routePointsJson is List
+          ? List<CategoryTripRoutePoint>.from(
+              routePointsJson.map(
+                (point) => CategoryTripRoutePoint.fromJson(
+                  Map<String, dynamic>.from(point),
+                ),
+              ),
+            )
+          : [],
       detailsEndpoint: json["details_endpoint"]?.toString(),
       bookingEndpoint: json["booking_endpoint"]?.toString(),
     );
@@ -191,6 +205,53 @@ class CategoryTripItem {
   String get carType => vehicle?.type ?? "";
 
   String get vehicleImage => vehicle?.image ?? "";
+
+  List<CategoryTripRoutePoint> get visibleStopPoints {
+    final stops = [...routePoints];
+
+    stops.sort((a, b) => (a.sequenceOrder ?? 0).compareTo(b.sequenceOrder ?? 0));
+
+    return stops.where((point) {
+      final type = point.type.toLowerCase();
+      return type != "start" && type != "end";
+    }).toList();
+  }
+}
+
+class CategoryTripRoutePoint {
+  final int? pointId;
+  final String title;
+  final String subtitle;
+  final String type;
+  final int? sequenceOrder;
+  final bool isNew;
+
+  CategoryTripRoutePoint({
+    this.pointId,
+    required this.title,
+    required this.subtitle,
+    required this.type,
+    this.sequenceOrder,
+    this.isNew = false,
+  });
+
+  factory CategoryTripRoutePoint.fromJson(Map<String, dynamic> json) {
+    final title = json["point_name"] ??
+        json["name"] ??
+        json["note"] ??
+        json["title"] ??
+        "Stop point";
+
+    return CategoryTripRoutePoint(
+      pointId: _toInt(json["point_id"] ?? json["trip_point_id"]),
+      title: title.toString(),
+      subtitle:
+          (json["display_address"] ?? json["address"] ?? "").toString(),
+      type: (json["type"] ?? json["point_type"] ?? "stop").toString(),
+      sequenceOrder: _toInt(json["sequence_order"]),
+      isNew: _toBool(json["is_new"]) == true,
+    );
+  }
 }
 
 class TripTypeInfo {

@@ -147,6 +147,22 @@ class PassengerTripItemModel {
 
   String get toDetails => to?.displayAddress ?? to?.address ?? "";
 
+  String get pickupTitle {
+    return pickup?.pointName ?? pickup?.governorateName ?? "";
+  }
+
+  String get pickupDetails {
+    return pickup?.displayAddress ?? pickup?.address ?? "";
+  }
+
+  bool get hasPickupPoint {
+    return pickupTitle.trim().isNotEmpty || pickupDetails.trim().isNotEmpty;
+  }
+
+  bool get isNewPickupPoint {
+    return pickup?.isNew == true;
+  }
+
   String get dateText => departureTime ?? booking?.createdAt ?? "";
 
   String get infoText {

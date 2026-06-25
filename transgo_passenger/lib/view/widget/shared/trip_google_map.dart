@@ -21,6 +21,7 @@ class TripGoogleMap extends StatelessWidget {
     this.zoomControlsEnabled = true,
     this.scrollGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
+    this.onTap,
   });
 
   final LatLng initialPosition;
@@ -37,6 +38,7 @@ class TripGoogleMap extends StatelessWidget {
   final bool zoomControlsEnabled;
   final bool scrollGesturesEnabled;
   final bool zoomGesturesEnabled;
+  final void Function(LatLng position)? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +74,7 @@ class TripGoogleMap extends StatelessWidget {
           tiltGesturesEnabled: false,
           compassEnabled: false,
           mapToolbarEnabled: false,
+          onTap: onTap,
           gestureRecognizers: {
             Factory<OneSequenceGestureRecognizer>(
               () => EagerGestureRecognizer(),
