@@ -190,6 +190,16 @@ class MyTripsController extends GetxController {
   void onTrackingPressed(PassengerTripItemModel trip) {
     print("TRACKING TRIP ID => ${trip.tripId}");
     print("TRACKING ENDPOINT => ${trip.trackingEndpoint}");
+
+    Get.toNamed(
+      AppRoute.tripTracking,
+      arguments: {
+        "trip": trip,
+        "trip_id": trip.tripId,
+        "details_endpoint": trip.detailsEndpoint,
+        "tracking_endpoint": trip.trackingEndpoint,
+      },
+    );
   }
 
   Future<CancelBookingModel?> onCancelPressed(

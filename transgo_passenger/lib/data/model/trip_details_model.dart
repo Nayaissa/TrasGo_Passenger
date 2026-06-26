@@ -169,6 +169,7 @@ class DriverInfo {
   final int? id;
   final String? fullName;
   final String? image;
+  final String? phone;
   final double? rating;
   final String? profileEndpoint;
 
@@ -176,6 +177,7 @@ class DriverInfo {
     this.id,
     this.fullName,
     this.image,
+    this.phone,
     this.rating,
     this.profileEndpoint,
   });
@@ -185,6 +187,10 @@ class DriverInfo {
       id: _toInt(json["id"]),
       fullName: json["full_name"]?.toString(),
       image: json["image"]?.toString(),
+      phone:
+          json["phone"]?.toString() ??
+          json["mobile"]?.toString() ??
+          json["phone_number"]?.toString(),
       rating: _toDouble(json["rating"]),
       profileEndpoint: json["profile_endpoint"]?.toString(),
     );

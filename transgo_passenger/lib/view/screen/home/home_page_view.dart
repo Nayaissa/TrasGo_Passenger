@@ -5,7 +5,6 @@ import 'package:transgo_passenger/core/constant/AppColor.dart';
 import 'package:transgo_passenger/view/widget/home/category_card.dart';
 import 'package:transgo_passenger/view/widget/home/explore_ride_card.dart';
 import 'package:transgo_passenger/view/widget/home/home_header_widget.dart';
-import 'package:transgo_passenger/view/widget/home/home_search_panel.dart';
 import 'package:transgo_passenger/view/widget/home/home_section_header.dart';
 import 'package:transgo_passenger/view/widget/home/popular_trip_card.dart';
 import 'package:transgo_passenger/view/widget/state/app_state_view.dart';

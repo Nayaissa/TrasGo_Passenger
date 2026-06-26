@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:transgo_passenger/core/constant/AppColor.dart';
 
-class TripGoogleMap extends StatelessWidget {
+class TripGoogleMap extends StatefulWidget {
   const TripGoogleMap({
     super.key,
     required this.initialPosition,
@@ -21,6 +21,7 @@ class TripGoogleMap extends StatelessWidget {
     this.zoomControlsEnabled = true,
     this.scrollGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
+    this.mapStyle,
     this.onTap,
   });
 
@@ -38,59 +39,104 @@ class TripGoogleMap extends StatelessWidget {
   final bool zoomControlsEnabled;
   final bool scrollGesturesEnabled;
   final bool zoomGesturesEnabled;
+  final String? mapStyle;
   final void Function(LatLng position)? onTap;
+
+  @override
+  State<TripGoogleMap> createState() => _TripGoogleMapState();
+}
+
+class _TripGoogleMapState extends State<TripGoogleMap> {
+  GoogleMapController? _mapController;
+
+  @override
+  void didUpdateWidget(covariant TripGoogleMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final positionChanged =
+        oldWidget.initialPosition.latitude != widget.initialPosition.latitude ||
+        oldWidget.initialPosition.longitude != widget.initialPosition.longitude;
+    final boundsChanged = oldWidget.bounds != widget.bounds;
+
+    if (positionChanged || boundsChanged) {
+      _moveCamera();
+    }
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
+      height: widget.height,
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColor.fifthColor,
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         child: GoogleMap(
           initialCameraPosition: CameraPosition(
-            target: initialPosition,
-            zoom: zoom,
+            target: widget.initialPosition,
+            zoom: widget.zoom,
           ),
-          markers: markers,
+          markers: widget.markers,
           polylines: {
-            if (polylinePoints.isNotEmpty)
+            if (widget.polylinePoints.isNotEmpty)
               Polyline(
-                polylineId: PolylineId(polylineId),
-                points: polylinePoints,
-                color: polylineColor,
-                width: polylineWidth,
+                polylineId: PolylineId(widget.polylineId),
+                points: widget.polylinePoints,
+                color: widget.polylineColor,
+                width: widget.polylineWidth,
               ),
           },
           myLocationButtonEnabled: false,
-          zoomControlsEnabled: zoomControlsEnabled,
-          zoomGesturesEnabled: zoomGesturesEnabled,
-          scrollGesturesEnabled: scrollGesturesEnabled,
+          zoomControlsEnabled: widget.zoomControlsEnabled,
+          zoomGesturesEnabled: widget.zoomGesturesEnabled,
+          scrollGesturesEnabled: widget.scrollGesturesEnabled,
           rotateGesturesEnabled: false,
           tiltGesturesEnabled: false,
           compassEnabled: false,
           mapToolbarEnabled: false,
-          onTap: onTap,
+          style: widget.mapStyle,
+          onTap: widget.onTap,
           gestureRecognizers: {
             Factory<OneSequenceGestureRecognizer>(
               () => EagerGestureRecognizer(),
             ),
           },
           onMapCreated: (mapController) {
-            final mapBounds = bounds;
-
-            if (mapBounds != null) {
-              Future.delayed(const Duration(milliseconds: 350), () {
-                mapController.animateCamera(
-                  CameraUpdate.newLatLngBounds(mapBounds, boundsPadding),
-                );
-              });
-            }
+            _mapController = mapController;
+            Future.delayed(const Duration(milliseconds: 350), _moveCamera);
           },
+        ),
+      ),
+    );
+  }
+
+  void _moveCamera() {
+    final controller = _mapController;
+    if (controller == null) return;
+
+    final mapBounds = widget.bounds;
+
+    if (mapBounds != null) {
+      controller.animateCamera(
+        CameraUpdate.newLatLngBounds(mapBounds, widget.boundsPadding),
+      );
+      return;
+    }
+
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: widget.initialPosition,
+          zoom: widget.zoom,
         ),
       ),
     );

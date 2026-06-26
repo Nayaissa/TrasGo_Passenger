@@ -14,6 +14,7 @@ class AppRoute {
   static const String categoryTrips = '/categoryTrips';
   static const String passengerTrips = '/passengerTrips';
   static const String tripDetails = '/tripDetails';
+  static const String tripTracking = '/tripTracking';
 
   // bookings
     static const String bookTrip = '/bookTrip';

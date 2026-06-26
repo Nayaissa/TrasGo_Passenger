@@ -353,12 +353,14 @@ class DriverInfoModel {
   final int? id;
   final String? fullName;
   final String? image;
+  final String? phone;
   final double? rating;
 
   DriverInfoModel({
     this.id,
     this.fullName,
     this.image,
+    this.phone,
     this.rating,
   });
 
@@ -367,6 +369,10 @@ class DriverInfoModel {
       id: _toInt(json["id"]),
       fullName: json["full_name"]?.toString(),
       image: json["image"]?.toString(),
+      phone:
+          json["phone"]?.toString() ??
+          json["mobile"]?.toString() ??
+          json["phone_number"]?.toString(),
       rating: _toDouble(json["rating"]),
     );
   }
