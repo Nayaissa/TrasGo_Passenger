@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:transgo_passenger/controller/home/home_page_controller.dart';
+import 'package:transgo_passenger/controller/noti/notification_controller.dart';
 import 'package:transgo_passenger/core/constant/AppColor.dart';
 import 'package:transgo_passenger/view/widget/home/category_card.dart';
 import 'package:transgo_passenger/view/widget/home/explore_ride_card.dart';
@@ -37,10 +38,17 @@ class HomeView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HomeHeaderWidget(
-                    title: "Good Evening, Naya",
-                    subtitle: "Ready for your next trip?",
-                    onNotificationTap: () {},
+                  GetBuilder<NotificationController>(
+                    builder: (notificationController) {
+                      return HomeHeaderWidget(
+                        title: "Good Evening, Naya",
+                        subtitle: "Ready for your next trip?",
+                        unreadCount: notificationController.unreadCount,
+                        onNotificationTap: () {
+                          controller.goToNotification();
+                        },
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 22),

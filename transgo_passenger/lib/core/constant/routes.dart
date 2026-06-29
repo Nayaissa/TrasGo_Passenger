@@ -19,6 +19,12 @@ class AppRoute {
   // bookings
     static const String bookTrip = '/bookTrip';
 
+  // search
+    static const String  searchTrip = '/searchTrip';
+  // notification
+    static const String  notification = '/notification';
+
+
 
 
 

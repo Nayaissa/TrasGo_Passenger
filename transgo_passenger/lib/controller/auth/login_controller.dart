@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:transgo_passenger/core/class/diohelper.dart';
@@ -50,85 +51,78 @@ class LoginControllerImp extends LoginController {
       update();
 
       DioHelper.postsData(
-        url: 'v1/passenger/login',
-        data: {
-          'email': email.text.trim(),
-          'password': password.text,
-        },
-      ).then((value) {
-        print(value!.data);
+            url: 'v1/passenger/login',
+            data: {'email': email.text.trim(), 'password': password.text},
+          )
+          .then((value) {
+            print(value!.data);
 
-        loginModel = LoginModel.fromJson(value.data);
+            loginModel = LoginModel.fromJson(value.data);
 
-        if (value.statusCode == 200 && loginModel?.success == true) {
-          final user = loginModel?.data?.user;
-          final token = loginModel?.data?.token;
-          final role = loginModel?.data?.role;
-        
+            if (value.statusCode == 200 && loginModel?.success == true) {
+              final user = loginModel?.data?.user;
+              final token = loginModel?.data?.token;
+              final role = loginModel?.data?.role;
 
-          if (token != null && token.isNotEmpty) {
-            myServices.sharedPreferences.setString('token', token);
-          }
+              if (token != null && token.isNotEmpty) {
+                myServices.sharedPreferences.setString('token', token);
+              }
+              final String userid =
+                  loginModel?.data?.user?.userId?.toString() ?? "";
 
-          myServices.sharedPreferences.setString(
-            'userid',
-            user?.userId.toString() ?? '',
-          );
+              myServices.sharedPreferences.setString(
+                'userid',
+                user?.userId.toString() ?? '',
+              );
 
-          myServices.sharedPreferences.setString(
-            'username',
-            user?.fullName ?? '',
-          );
+              myServices.sharedPreferences.setString(
+                'username',
+                user?.fullName ?? '',
+              );
 
-          myServices.sharedPreferences.setString(
-            'phone',
-            user?.phone ?? '',
-          );
+              myServices.sharedPreferences.setString(
+                'phone',
+                user?.phone ?? '',
+              );
 
-          myServices.sharedPreferences.setString(
-            'email',
-            user?.email ?? '',
-          );
+              myServices.sharedPreferences.setString(
+                'email',
+                user?.email ?? '',
+              );
 
-          myServices.sharedPreferences.setString(
-            'role',
-            role ?? '',
-          );
+              myServices.sharedPreferences.setString('role', role ?? '');
 
-          myServices.sharedPreferences.setString('step', '2');
+              myServices.sharedPreferences.setString('step', '2');
+              if (userid.isNotEmpty) {
+                FirebaseMessaging.instance.subscribeToTopic(userid);
+              }
 
-          statusRequest = StatusRequest.success;
-          update();
+              FirebaseMessaging.instance.subscribeToTopic("passengers");
+              FirebaseMessaging.instance.subscribeToTopic("user_4");
+              statusRequest = StatusRequest.success;
+              update();
 
-          Get.snackbar(
-            'Success',
-            loginModel?.message ?? 'Login successfully',
-          );
+              Get.snackbar(
+                'Success',
+                loginModel?.message ?? 'Login successfully',
+              );
 
-         
-         
-            Get.offAllNamed(AppRoute.homepage);
-          
-        } else {
-          statusRequest = StatusRequest.failure;
-          update();
+              Get.offAllNamed(AppRoute.homepage);
+            } else {
+              statusRequest = StatusRequest.failure;
+              update();
 
-          Get.snackbar(
-            'Warning',
-            loginModel?.message ?? 'Login failed',
-          );
-        }
-      }).catchError((error) {
-        print(error.toString());
+              Get.snackbar('Warning', loginModel?.message ?? 'Login failed');
+            }
+          })
+          .catchError((error) {
+            print(error.toString());
 
-        statusRequest = StatusRequest.serverfailure;
-        update();
+            statusRequest = StatusRequest.serverfailure;
+            update();
 
-        Get.snackbar(
-          'Error',
-          'Server error, please try again',
-        );
-      });
+            Get.snackbar('Error', 'Server error, please try again');
+          });
     }
   }
 

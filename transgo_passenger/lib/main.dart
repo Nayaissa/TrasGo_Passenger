@@ -1,4 +1,6 @@
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:transgo_passenger/bindings/initalbindings.dart';
@@ -6,11 +8,21 @@ import 'package:transgo_passenger/core/class/diohelper.dart';
 import 'package:transgo_passenger/core/constant/routes.dart';
 import 'package:transgo_passenger/core/localization/local_controller.dart';
 import 'package:transgo_passenger/core/services/service.dart';
+import 'package:transgo_passenger/firebase_options.dart';
 import 'package:transgo_passenger/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initalSevices();
 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
   DioHelper.init();
 
   runApp(const MyApp());

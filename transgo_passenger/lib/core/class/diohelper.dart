@@ -136,4 +136,26 @@ class DioHelper {
       return null;
     }
   }
+
+  
+  /// DELETE request with token from shared preferences
+  static Future<dio.Response?> patchData({
+    required String url,
+     Map<String, dynamic>? data,
+    Map<String, dynamic>? query,
+  }) async {
+    try {
+      String? token = myServices.sharedPreferences.getString('token') ?? '';
+
+      dioClient!.options.headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      return await dioClient?.patch(url, queryParameters: query, data: data);
+    } catch (e) {
+      print('Error deleting data: $e');
+      return null;
+    }
+  }
 }

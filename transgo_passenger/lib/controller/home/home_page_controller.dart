@@ -69,6 +69,7 @@ abstract class HomeViewController extends GetxController {
   Future<void> refreshTripCategories();
   void searchTrips();
   void openCategoryTrips(TripCategoryItemModel category);
+  goToNotification();
 }
 
 class HomeViewControllerImp extends HomeViewController {
@@ -150,20 +151,18 @@ class HomeViewControllerImp extends HomeViewController {
           );
         }
       } else if (value != null && value.statusCode == 401) {
-         await myServices.removeFromSharedPreferences('token');
-        await myServices.setString('step','1');
+        await myServices.removeFromSharedPreferences('token');
+        await myServices.setString('step', '1');
 
+        categoriesStatusRequest = StatusRequest.serverfailure;
 
-  categoriesStatusRequest = StatusRequest.serverfailure;
+        Get.snackbar(
+          "Error",
+          "انتهت صلاحية تسجيل الدخول، يرجى تسجيل الدخول مرة أخرى",
+          snackPosition: SnackPosition.BOTTOM,
+        );
 
-  Get.snackbar(
-    "Error",
-    "انتهت صلاحية تسجيل الدخول، يرجى تسجيل الدخول مرة أخرى",
-    snackPosition: SnackPosition.BOTTOM,
-  );
-
-  Get.offAllNamed(AppRoute.login);
-        
+        Get.offAllNamed(AppRoute.login);
       } else {
         categoriesStatusRequest = StatusRequest.serverfailure;
 
@@ -234,5 +233,10 @@ class HomeViewControllerImp extends HomeViewController {
   @override
   void searchTrips() {
     print("Searching from $fromLocation to $toLocation...");
+  }
+
+  @override
+  goToNotification() {
+    Get.toNamed(AppRoute.notification);
   }
 }
