@@ -59,6 +59,7 @@
 //   }
 // }
 import 'package:get/get.dart';
+import 'package:transgo_passenger/controller/profile/passenger_profile_controller.dart';
 import 'package:transgo_passenger/core/class/diohelper.dart';
 import 'package:transgo_passenger/core/class/statusrequest.dart';
 import 'package:transgo_passenger/core/constant/routes.dart';
@@ -70,6 +71,7 @@ abstract class HomeViewController extends GetxController {
   void searchTrips();
   void openCategoryTrips(TripCategoryItemModel category);
   goToNotification();
+  goToSearch();
 }
 
 class HomeViewControllerImp extends HomeViewController {
@@ -151,9 +153,6 @@ class HomeViewControllerImp extends HomeViewController {
           );
         }
       } else if (value != null && value.statusCode == 401) {
-        await myServices.removeFromSharedPreferences('token');
-        await myServices.setString('step', '1');
-
         categoriesStatusRequest = StatusRequest.serverfailure;
 
         Get.snackbar(
@@ -161,8 +160,7 @@ class HomeViewControllerImp extends HomeViewController {
           "انتهت صلاحية تسجيل الدخول، يرجى تسجيل الدخول مرة أخرى",
           snackPosition: SnackPosition.BOTTOM,
         );
-
-        Get.offAllNamed(AppRoute.login);
+        App.logout();
       } else {
         categoriesStatusRequest = StatusRequest.serverfailure;
 
@@ -238,5 +236,10 @@ class HomeViewControllerImp extends HomeViewController {
   @override
   goToNotification() {
     Get.toNamed(AppRoute.notification);
+  }
+
+  @override
+  goToSearch() {
+    Get.toNamed(AppRoute.searchTrip);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:transgo_passenger/controller/profile/passenger_profile_controller.dart';
 import 'package:transgo_passenger/core/class/diohelper.dart';
 import 'package:transgo_passenger/core/class/statusrequest.dart';
 import 'package:transgo_passenger/core/constant/routes.dart';
@@ -57,9 +58,7 @@ class MyTripsController extends GetxController {
 
   Future<void> getTripStatuses() async {
     try {
-      final value = await DioHelper.getDataa(
-        url: "v1/trip-statuses",
-      );
+      final value = await DioHelper.getDataa(url: "v1/trip-statuses");
 
       print("TRIP STATUSES STATUS CODE => ${value?.statusCode}");
       print("TRIP STATUSES RESPONSE => ${value?.data}");
@@ -97,9 +96,7 @@ class MyTripsController extends GetxController {
 
       print("MY TRIPS URL => $url");
 
-      final value = await DioHelper.getDataa(
-        url: url,
-      );
+      final value = await DioHelper.getDataa(url: url);
 
       print("MY TRIPS STATUS CODE => ${value?.statusCode}");
       print("MY TRIPS RESPONSE => ${value?.data}");
@@ -127,15 +124,13 @@ class MyTripsController extends GetxController {
         }
       } else if (value != null && value.statusCode == 401) {
         statusRequest = StatusRequest.serverfailure;
-        await myServices.removeFromSharedPreferences('token');
-        await myServices.setString('step','1');
+
         Get.snackbar(
           "Error",
           "انتهت صلاحية تسجيل الدخول، يرجى تسجيل الدخول مرة أخرى",
           snackPosition: SnackPosition.BOTTOM,
         );
-          Get.offAllNamed(AppRoute.login);
-
+        App.logout();
       } else {
         statusRequest = StatusRequest.serverfailure;
       }

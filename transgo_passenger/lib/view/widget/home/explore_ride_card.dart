@@ -28,6 +28,7 @@ class ExploreRideCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: AppColor.thirdColor.withOpacity(0.08),
             blurRadius: 24,
             offset: const Offset(0, 10),

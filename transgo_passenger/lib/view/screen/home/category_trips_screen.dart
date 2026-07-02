@@ -5,6 +5,7 @@ import 'package:transgo_passenger/core/constant/AppColor.dart';
 import 'package:transgo_passenger/view/widget/state/app_state_view.dart';
 import 'package:transgo_passenger/view/widget/trips/available_trip_card.dart';
 import 'package:transgo_passenger/view/widget/trips/trips_city_banner.dart';
+import 'package:transgo_passenger/view/widget/trips/trips_filter_card.dart';
 import 'package:transgo_passenger/view/widget/trips/trips_summary_card.dart';
 
 class TripsView extends StatelessWidget {
@@ -73,7 +74,7 @@ class TripsView extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // TripsInlineFilterCard(controller: controller),
+                    TripsInlineFilterCard(controller: controller),
 
                     const SizedBox(height: 20),
 

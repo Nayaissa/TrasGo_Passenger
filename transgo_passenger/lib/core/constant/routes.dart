@@ -17,19 +17,15 @@ class AppRoute {
   static const String tripTracking = '/tripTracking';
 
   // bookings
-    static const String bookTrip = '/bookTrip';
+  static const String bookTrip = '/bookTrip';
 
   // search
-    static const String  searchTrip = '/searchTrip';
+  static const String searchTrip = '/searchTrip';
   // notification
-    static const String  notification = '/notification';
+  static const String notification = '/notification';
 
-
-
-
-
-
-
-  
+  // profile
+  static const String passengerProfile = '/passengerProfile';
+  static const String driverProfile = '/driverProfile';
 
 }

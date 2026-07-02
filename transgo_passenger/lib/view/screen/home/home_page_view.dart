@@ -57,7 +57,10 @@ class HomeView extends StatelessWidget {
                     title: "Explore Your Next\nRide",
                     subtitle: "Book shared or private trips بسهولة\nوسرعة",
                     buttonText: "Find Trip",
-                    onPressed: controller.searchTrips,
+                    onPressed: () {
+                      controller.goToSearch();
+                    },
+                    //controller.searchTrips,
                   ),
 
                   const SizedBox(height: 20),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:transgo_passenger/core/constant/AppColor.dart';
 import 'package:transgo_passenger/view/screen/home/home_page_view.dart';
+import 'package:transgo_passenger/view/screen/profile/passenger_profile_screen.dart';
 import 'package:transgo_passenger/view/screen/trips/passenger_trips_screen.dart';
 
 class HomeController extends GetxController {
@@ -15,12 +16,7 @@ class HomeController extends GetxController {
       title: "Wallet",
       subtitle: "Wallet features will be available soon",
     ),
-    Center(
-      child: Text(
-        'Profile Screen Content',
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
+   PassengerProfileScreen() ,
   ];
 
   void changePage(int index) {

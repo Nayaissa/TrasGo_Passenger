@@ -284,6 +284,7 @@ void onInit() {
       return PassengerUiModel(
         name: passenger.fullName ?? "",
         image: passenger.image ?? "",
+        rating: passenger.rating ?? 0,
       );
     }).toList();
   }
@@ -486,7 +487,19 @@ void onInit() {
   }
 
   void viewDriverProfile() {
-    print("DRIVER PROFILE => ${tripDetails?.driver?.profileEndpoint}");
+    final driver = tripDetails?.driver;
+
+    Get.toNamed(
+      AppRoute.driverProfile,
+      arguments: {
+        "driver_id": driver?.id,
+        "full_name": driver?.fullName,
+        "image": driver?.image,
+        "phone": driver?.phone,
+        "rating": driver?.rating,
+        "profile_endpoint": driver?.profileEndpoint,
+      },
+    );
   }
 
   void viewReviews() {
@@ -619,10 +632,12 @@ class TripFeatureModel {
 class PassengerUiModel {
   final String name;
   final String image;
+  final double rating;
 
   PassengerUiModel({
     required this.name,
     required this.image,
+    required this.rating,
   });
 }
 

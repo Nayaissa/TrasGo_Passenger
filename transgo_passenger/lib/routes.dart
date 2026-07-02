@@ -12,6 +12,8 @@ import 'package:transgo_passenger/view/screen/bookings/book_trip_screen.dart';
 import 'package:transgo_passenger/view/screen/home/home_screen.dart';
 import 'package:transgo_passenger/view/screen/home/category_trips_screen.dart';
 import 'package:transgo_passenger/view/screen/notification_screen.dart';
+import 'package:transgo_passenger/view/screen/profile/driver_profile_screen.dart';
+import 'package:transgo_passenger/view/screen/profile/passenger_profile_screen.dart';
 import 'package:transgo_passenger/view/screen/search/search_trip_screen.dart';
 import 'package:transgo_passenger/view/screen/trips/passenger_trips_screen.dart';
 import 'package:transgo_passenger/view/screen/trips/trip_details_screen.dart';
@@ -47,4 +49,9 @@ List<GetPage<dynamic>>? getPages = [
   GetPage(name: AppRoute.searchTrip, page: () => TripSearchView()),
   //notification
   GetPage(name: AppRoute.notification, page: () => NotificationScreen()),
+  GetPage(name: AppRoute.passengerProfile, page: () => PassengerProfileScreen()),
+GetPage(
+    name: AppRoute.driverProfile,
+    page: () => const DriverProfileScreen(),
+  ),
 ];
