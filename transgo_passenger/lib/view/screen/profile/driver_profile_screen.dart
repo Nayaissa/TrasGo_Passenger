@@ -139,8 +139,23 @@ class DriverProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           ProfileInfoTile(
+            icon: Icons.category_outlined,
+            title: "Category",
+            value: profile.categoryName,
+          ),
+          const SizedBox(height: 18),
+          ProfileInfoTile(
+            icon: Icons.speed_outlined,
+            title: "Price / KM",
+            value: profile.pricePerKilometerText == "-"
+                ? "-"
+                : "${profile.pricePerKilometerText} S.P",
+          ),
+          const SizedBox(height: 18),
+          ProfileInfoTile(
             icon: Icons.numbers,
             title: "Plate Number",
+            
             value: profile.carPlateNumber,
           ),
           const SizedBox(height: 18),
@@ -285,18 +300,7 @@ class DriverProfileScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 5),
-            Row(
-              children: List.generate(
-                5,
-                (index) => Icon(
-                  index < review.rating.round()
-                      ? Icons.star
-                      : Icons.star_border,
-                  color: Colors.blueAccent,
-                  size: 18,
-                ),
-              ),
-            ),
+            _buildRatingStars(review.rating),
             const SizedBox(height: 8),
             Text(
               review.comment.isEmpty ? "-" : review.comment,
@@ -305,4 +309,26 @@ class DriverProfileScreen extends StatelessWidget {
           ],
         ),
       );
+
+  Widget _buildRatingStars(double rating) {
+    final starsCount = rating.round().clamp(0, 5).toInt();
+
+    if (starsCount == 0) {
+      return const Text(
+        "-",
+        style: TextStyle(color: Colors.white60),
+      );
+    }
+
+    return Row(
+      children: List.generate(
+        starsCount,
+        (_) => const Icon(
+          Icons.star,
+          color: Colors.blueAccent,
+          size: 18,
+        ),
+      ),
+    );
+  }
 }

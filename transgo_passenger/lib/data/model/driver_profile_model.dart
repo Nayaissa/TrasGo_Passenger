@@ -60,6 +60,8 @@ class DriverProfileInfo {
   final String email;
   final String carPlateNumber;
   final String carType;
+  final String categoryName;
+  final double pricePerKilometer;
   final List<String> carPhotos;
   final double overallRating;
 
@@ -70,12 +72,16 @@ class DriverProfileInfo {
     required this.email,
     required this.carPlateNumber,
     required this.carType,
+    required this.categoryName,
+    required this.pricePerKilometer,
     required this.carPhotos,
     required this.overallRating,
   });
 
   factory DriverProfileInfo.fromJson(Map<String, dynamic> json) {
     final photos = json["car_photos"];
+    final category = json["category_id"] ?? json["category"];
+    final vehicle = json["vehicle"];
 
     return DriverProfileInfo(
       name: json["name"]?.toString() ?? "",
@@ -83,7 +89,18 @@ class DriverProfileInfo {
       phoneNumber: json["phone_number"]?.toString() ?? "",
       email: json["email"]?.toString() ?? "",
       carPlateNumber: json["car_plate_number"]?.toString() ?? "",
-      carType: json["car_type"]?.toString() ?? "",
+      carType: json["car_type"]?.toString() ??
+          json["vehicle_type"]?.toString() ??
+          (vehicle is Map ? vehicle["type"]?.toString() : null) ??
+          "",
+      categoryName: category is Map
+          ? category["name"]?.toString() ?? ""
+          : json["category_name"]?.toString() ?? "",
+      pricePerKilometer: _toDouble(
+        json["price_per_kilometer"] ??
+            json["price_per_km"] ??
+            json["kilometer_price"],
+      ),
       carPhotos: photos is List
           ? photos.map((e) => e.toString()).where((e) => e.isNotEmpty).toList()
           : [],
@@ -99,6 +116,8 @@ class DriverProfileInfo {
       email: "",
       carPlateNumber: "",
       carType: "",
+      categoryName: "",
+      pricePerKilometer: 0,
       carPhotos: [],
       overallRating: 0,
     );
@@ -107,6 +126,14 @@ class DriverProfileInfo {
   String get ratingText {
     return overallRating.toStringAsFixed(
       overallRating.truncateToDouble() == overallRating ? 0 : 1,
+    );
+  }
+
+  String get pricePerKilometerText {
+    if (pricePerKilometer == 0) return "-";
+
+    return pricePerKilometer.toStringAsFixed(
+      pricePerKilometer.truncateToDouble() == pricePerKilometer ? 0 : 2,
     );
   }
 }

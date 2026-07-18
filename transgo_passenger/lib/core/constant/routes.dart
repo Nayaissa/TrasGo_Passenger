@@ -27,5 +27,7 @@ class AppRoute {
   // profile
   static const String passengerProfile = '/passengerProfile';
   static const String driverProfile = '/driverProfile';
+// wallet
+  static const String wallet = '/wallet';
 
 }

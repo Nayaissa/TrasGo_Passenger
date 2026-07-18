@@ -18,6 +18,7 @@ import 'package:transgo_passenger/view/screen/search/search_trip_screen.dart';
 import 'package:transgo_passenger/view/screen/trips/passenger_trips_screen.dart';
 import 'package:transgo_passenger/view/screen/trips/trip_details_screen.dart';
 import 'package:transgo_passenger/view/screen/trips/trip_tracking_screen.dart';
+import 'package:transgo_passenger/view/wallet/wallet_screen.dart';
 
 List<GetPage<dynamic>>? getPages = [
   // intro.....
@@ -50,8 +51,13 @@ List<GetPage<dynamic>>? getPages = [
   //notification
   GetPage(name: AppRoute.notification, page: () => NotificationScreen()),
   GetPage(name: AppRoute.passengerProfile, page: () => PassengerProfileScreen()),
-GetPage(
+  GetPage(
     name: AppRoute.driverProfile,
-    page: () => const DriverProfileScreen(),
+    page: () =>  DriverProfileScreen(),
+  ),
+  // wallet
+   GetPage(
+    name: AppRoute.wallet,
+    page: () =>  WalletScreen(),
   ),
 ];

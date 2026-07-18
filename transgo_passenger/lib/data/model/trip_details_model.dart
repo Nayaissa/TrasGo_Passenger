@@ -184,7 +184,7 @@ class DriverInfo {
 
   factory DriverInfo.fromJson(Map<String, dynamic> json) {
     return DriverInfo(
-      id: _toInt(json["id"]),
+      id: _toInt(json["id"] ?? json["driver_id"]),
       fullName: json["full_name"]?.toString(),
       image: json["image"]?.toString(),
       phone:

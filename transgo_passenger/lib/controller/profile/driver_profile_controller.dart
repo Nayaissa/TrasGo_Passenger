@@ -42,6 +42,8 @@ class DriverProfileControllerImp extends DriverProfileController {
     if (value is int) return value;
     return int.tryParse(value.toString()) ?? 0;
   }
+
+
   @override
   Future<void> getDriverProfile() async {
     
@@ -50,8 +52,9 @@ class DriverProfileControllerImp extends DriverProfileController {
     
 
     try {
+     
       final response = await DioHelper.getDataa(
-        url: "v1/passenger/drivers/$driverId/profile",
+        url: 'v1/passenger/drivers/$driverId',
       );
 
       if (response != null && response.statusCode == 200) {
