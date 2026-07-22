@@ -31,7 +31,6 @@ class TripTrackingModel {
 
 class TripTrackingData {
   final int? tripId;
-  final int? bookingId;
   final bool trackingAvailable;
   final bool trackingEnabledAfterStart;
   final String? trackingEndpoint;
@@ -45,7 +44,6 @@ class TripTrackingData {
 
   TripTrackingData({
     this.tripId,
-    this.bookingId,
     required this.trackingAvailable,
     required this.trackingEnabledAfterStart,
     this.trackingEndpoint,
@@ -59,49 +57,81 @@ class TripTrackingData {
   });
 
   factory TripTrackingData.fromJson(Map<String, dynamic> json) {
+
+    // tracking object
+    final tracking =
+        json["tracking"] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json["tracking"])
+            : <String, dynamic>{};
+
+    // last position
+    final lastPosition =
+        tracking["last_position"] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(tracking["last_position"])
+            : <String, dynamic>{};
+
+    // history object
+    final historyObject =
+        tracking["history"] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(tracking["history"])
+            : <String, dynamic>{};
+
+    // history items
+    final historyItems =
+        historyObject["items"] is List
+            ? historyObject["items"] as List
+            : [];
+
     return TripTrackingData(
       tripId: _toInt(json["trip_id"]),
-      bookingId: _toInt(json["booking_id"]),
-      trackingAvailable: _toBool(json["tracking_available"]) ?? false,
+
+      // في الـ API الجديد
+      trackingAvailable:
+          _toBool(tracking["is_tracking_active"]) ?? false,
+
       trackingEnabledAfterStart:
-          _toBool(json["tracking_enabled_after_start"]) ?? false,
-      trackingEndpoint: json["tracking_endpoint"]?.toString(),
+          _toBool(tracking["has_live_location"]) ?? false,
+
+      trackingEndpoint:
+          json["details_endpoint"]?.toString(),
+
       status:
           json["status"] != null
               ? TripTrackingStatus.fromJson(
-                Map<String, dynamic>.from(json["status"]),
-              )
+                  Map<String, dynamic>.from(json["status"]),
+                )
               : null,
+
       trip:
           json["trip"] != null
               ? TripTrackingTrip.fromJson(
-                Map<String, dynamic>.from(json["trip"]),
-              )
+                  Map<String, dynamic>.from(json["trip"]),
+                )
               : null,
+
       message: json["message"]?.toString(),
-      driverLocation: _locationFromAny(json, const [
-        "driver_location",
-        "current_location",
-        "vehicle_location",
-        "last_location",
-        "location",
-      ]),
-      pickupLocation: _locationFromAny(json, const [
-        "pickup_location",
-        "pickup_point",
-        "pickup",
-      ]),
-      destinationLocation: _locationFromAny(json, const [
-        "destination_location",
-        "destination",
-        "dropoff_location",
-      ]),
-      history: _locationsFromAny(json, const [
-        "history",
-        "locations",
-        "tracking_history",
-        "route",
-      ]),
+
+      // موقع السائق الحالي
+      driverLocation:
+          lastPosition.isNotEmpty
+              ? TripTrackingLocation.fromJson(lastPosition)
+              : null,
+
+      pickupLocation: null,
+
+      destinationLocation: null,
+
+      // سجل حركة السائق
+      history:
+          historyItems
+              .whereType<Map>()
+              .map(
+                (e) => TripTrackingLocation.fromJson(
+                  Map<String, dynamic>.from(e),
+                ),
+              )
+              .where((e) => e.hasCoordinates)
+              .toList(),
     );
   }
 }
@@ -125,24 +155,36 @@ class TripTrackingStatus {
 
 class TripTrackingTrip {
   final String? departureAt;
+  final String? actualStartTime;
+  final String? completedAt;
   final String? from;
   final String? to;
+  final String? routePolyline;
 
   TripTrackingTrip({
     this.departureAt,
+    this.actualStartTime,
+    this.completedAt,
     this.from,
     this.to,
+    this.routePolyline,
   });
 
-  factory TripTrackingTrip.fromJson(Map<String, dynamic> json) {
+  factory TripTrackingTrip.fromJson(
+      Map<String, dynamic> json) {
     return TripTrackingTrip(
       departureAt: json["departure_at"]?.toString(),
+      actualStartTime:
+          json["actual_start_time"]?.toString(),
+      completedAt:
+          json["completed_at"]?.toString(),
       from: json["from"]?.toString(),
       to: json["to"]?.toString(),
+      routePolyline:
+          json["route_polyline"]?.toString(),
     );
   }
 }
-
 class TripTrackingLocation {
   final double? latitude;
   final double? longitude;

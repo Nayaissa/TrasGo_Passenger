@@ -335,6 +335,11 @@ class TripTrackingController extends GetxController {
     pickupLocation = data.pickupLocation ?? pickupLocation;
     destinationLocation = data.destinationLocation ?? destinationLocation;
     locationHistory = data.history.isEmpty ? locationHistory : data.history;
+   
+  routePolylinePoints =
+      _decodePolyline(
+        data.trip?.routePolyline ?? "",
+      );
   }
 
   void _fillDetailsUiData(TripDetailsData data) {

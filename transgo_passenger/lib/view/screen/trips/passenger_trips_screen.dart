@@ -108,12 +108,15 @@ class MyTripsView extends StatelessWidget {
 
                               return MyTripCard(
                                 trip: trip,
+                                onSharePressed: () {
+                                  controller.onSharePressed(trip);
+                                },
                                 onTrackingPressed: () {
                                   controller.onTrackingPressed(trip);
                                 },
                                 onCancelPressed: () async {
-                                  final cancelModel =
-                                      await controller.onCancelPressed(trip);
+                                  final cancelModel = await controller
+                                      .onCancelPressed(trip);
 
                                   if (cancelModel != null) {
                                     Get.dialog(
